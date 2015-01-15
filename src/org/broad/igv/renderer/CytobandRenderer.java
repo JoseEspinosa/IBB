@@ -158,7 +158,7 @@ public class CytobandRenderer {
             int shade = (int) (255 - stain / 100.0 * 255);
             Color c = stainColors.get(shade);
             if (c == null) {
-                c = new Color(shade, shade, shade);
+                c = new Color(0, 0, shade);
                 stainColors.put(shade, c);
             }
 
