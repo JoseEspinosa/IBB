@@ -37,6 +37,8 @@ import org.broad.igv.ui.event.ViewChange;
 import org.broad.igv.util.LongRunningTask;
 import org.broad.igv.util.NamedRunnable;
 
+import org.crg.utils.maths.LogBase;
+
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
@@ -459,33 +461,53 @@ public class RulerPanel extends JPanel {
 
     public static TickSpacing findSpacing(long maxValue, boolean scaleInKB) {
 
-        if (maxValue < 10) {
-            return new TickSpacing(1, "bp", 1);
+        if (maxValue < 60) {
+            return new TickSpacing(1, "s", 1);
         }
-
 
         // Now man zeroes?
-        int nZeroes = (int) Math.log10(maxValue);
-        String majorUnit = scaleInKB ? "kb" : "bp";
+        int nZeroes = (int) LogBase.LogBase(maxValue, 60);
+        String majorUnit = scaleInKB ? "h" : "s";
         int unitMultiplier = 1;
-        if (nZeroes > 9) {
-            majorUnit = scaleInKB ? "tb" : "gb";
-            unitMultiplier = 1000000000;
-        }
-        if (nZeroes > 6) {
-            majorUnit = scaleInKB ? "gb" : "mb";
-            unitMultiplier = 1000000;
-        } else if (nZeroes > 3) {
-            majorUnit = scaleInKB ? "mb" : "kb";
+        
+        if (nZeroes > 2) {
+            majorUnit = scaleInKB ? "3600h" : "h";
+            unitMultiplier = 3600;
+        } else if (nZeroes > 1) {
+            majorUnit = scaleInKB ? "60h" : "min";
             unitMultiplier = 1000;
         }
 
-        double nMajorTicks = maxValue / Math.pow(10, nZeroes - 1);
+        double nMajorTicks = maxValue / Math.pow(60, nZeroes - 1);
         if (nMajorTicks < 25) {
-            return new TickSpacing(Math.pow(10, nZeroes - 1), majorUnit, unitMultiplier);
+            return new TickSpacing(Math.pow(60, nZeroes - 1), majorUnit, unitMultiplier);
         } else {
-            return new TickSpacing(Math.pow(10, nZeroes) / 2, majorUnit, unitMultiplier);
+            return new TickSpacing(Math.pow(60, nZeroes) / 2, majorUnit, unitMultiplier);
         }
+        
+        // Decimal solution
+        // Now man zeroes?
+//        int nZeroes = (int) Math.log10(maxValue);
+//        String majorUnit = scaleInKB ? "kb" : "bp";
+//        int unitMultiplier = 1;
+//        if (nZeroes > 9) {
+//            majorUnit = scaleInKB ? "tb" : "gb";
+//            unitMultiplier = 1000000000;
+//        }
+//        if (nZeroes > 6) {
+//            majorUnit = scaleInKB ? "gb" : "mb";
+//            unitMultiplier = 1000000;
+//        } else if (nZeroes > 3) {
+//            majorUnit = scaleInKB ? "mb" : "kb";
+//            unitMultiplier = 1000;
+//        }
+//
+//        double nMajorTicks = maxValue / Math.pow(10, nZeroes - 1);
+//        if (nMajorTicks < 25) {
+//            return new TickSpacing(Math.pow(10, nZeroes - 1), majorUnit, unitMultiplier);
+//        } else {
+//            return new TickSpacing(Math.pow(10, nZeroes) / 2, majorUnit, unitMultiplier);
+//        }
     }
 
     private void init() {
