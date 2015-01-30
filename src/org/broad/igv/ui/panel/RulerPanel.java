@@ -475,7 +475,7 @@ public class RulerPanel extends JPanel {
             unitMultiplier = 3600;
         } else if (nZeroes > 1) {
             majorUnit = scaleInKB ? "60h" : "min";
-            unitMultiplier = 1000;
+            unitMultiplier = 60;
         }
 
         double nMajorTicks = maxValue / Math.pow(60, nZeroes - 1);
