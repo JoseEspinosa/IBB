@@ -461,31 +461,58 @@ public class RulerPanel extends JPanel {
 
     public static TickSpacing findSpacing(long maxValue, boolean scaleInKB) {
 
-        if (maxValue < 60) {
-            return new TickSpacing(1, "s", 1);
-        }
+//        if (maxValue < 60) {
+//            return new TickSpacing(1, "s", 1);
+//        }
 
         // Now man zeroes?
-        int nZeroes = (int) LogBase.LogBase(maxValue, 60);
-        String majorUnit = scaleInKB ? "h" : "s";
-        int unitMultiplier = 1;
+//        int nZeroes = (int) LogBase.LogBase(maxValue, 60);
+//        String majorUnit = scaleInKB ? "h" : "s";
+//        int unitMultiplier = 1;
+//        
+//        if (nZeroes > 2) {
+//            majorUnit = scaleInKB ? "3600h" : "h";
+//            unitMultiplier = 3600;
+//        } else if (nZeroes > 1) {
+//            majorUnit = scaleInKB ? "60h" : "min";
+//            unitMultiplier = 60;
+//        }
+//
+//        double nMajorTicks = maxValue / Math.pow(60, nZeroes - 1);
+//        if (nMajorTicks < 25) {
+//            return new TickSpacing(Math.pow(60, nZeroes - 1), majorUnit, unitMultiplier);
+//        } else {
+//            return new TickSpacing(Math.pow(60, nZeroes) / 2, majorUnit, unitMultiplier);
+//        }
         
-        if (nZeroes > 2) {
-            majorUnit = scaleInKB ? "3600h" : "h";
-            unitMultiplier = 3600;
-        } else if (nZeroes > 1) {
-            majorUnit = scaleInKB ? "60h" : "min";
-            unitMultiplier = 60;
+        // Decimal solution for frames
+    	if (maxValue < 60) {
+          return new TickSpacing(1, "frames", 1);
+    	}
+
+        int nZeroes = (int) Math.log10(maxValue);
+        String majorUnit = scaleInKB ? "kf" : "frames";
+        int unitMultiplier = 1;
+        if (nZeroes > 9) {
+        	majorUnit = scaleInKB ? "tf" : "gf";
+        	unitMultiplier = 1000000000;
+        }
+        if (nZeroes > 6) {
+        	majorUnit = scaleInKB ? "gf" : "mf";
+        	unitMultiplier = 1000000;
+        } else if (nZeroes > 3) {
+        	majorUnit = scaleInKB ? "mf" : "kf";
+        	unitMultiplier = 1000;
         }
 
-        double nMajorTicks = maxValue / Math.pow(60, nZeroes - 1);
+        double nMajorTicks = maxValue / Math.pow(10, nZeroes - 1);
         if (nMajorTicks < 25) {
-            return new TickSpacing(Math.pow(60, nZeroes - 1), majorUnit, unitMultiplier);
+        	return new TickSpacing(Math.pow(10, nZeroes - 1), majorUnit, unitMultiplier);
         } else {
-            return new TickSpacing(Math.pow(60, nZeroes) / 2, majorUnit, unitMultiplier);
+        	return new TickSpacing(Math.pow(10, nZeroes) / 2, majorUnit, unitMultiplier);
         }
         
-        // Decimal solution
+        // Decimal solution original solution
         // Now man zeroes?
 //        int nZeroes = (int) Math.log10(maxValue);
 //        String majorUnit = scaleInKB ? "kb" : "bp";
